@@ -1,0 +1,31 @@
+http:
+  port: 5000
+admin:
+  port: 9876
+  host: 'localhost'
+apiEndpoints:
+  productsApi:
+    host: 'localhost'
+    paths: '/products*'
+serviceEndpoints:
+  productsModifyService:
+    url: ${PRODUCT_MODIFY_SERVICE_URL}
+  productsReadService:
+    url: ${PRODUCT_READ_SERVICE_URL}
+policies:
+  - proxy
+pipelines:
+  default:
+    apiEndpoints:
+      - productsApi
+    policies:
+      - proxy:
+        - condition:
+            name: method
+            methods: GET
+          action:
+            serviceEndpoint: productsReadService
+            changeOrigin: true
+        - action:
+            serviceEndpoint: productsModifyService
+            changeOrigin: true

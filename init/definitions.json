@@ -1,0 +1,71 @@
+{
+  "users": [
+    {
+      "name": "admin",
+      "password_hash": "rhrfw+molOKP6SjxfM7M/nn1YRjxbM+pXoFsueS++S+13h1F",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator",
+      "limits": {}
+    },
+    {
+      "name": "guest",
+      "password_hash": "POaxVuD3yUYFNwf1VtBS7x+o7tvBAiW99TlTH0WLVjgCnY1T",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "",
+      "limits": {}
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "admin",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": "[main_exchange]",
+      "write": "[main_exchange]",
+      "read": "[main_exchange]"
+    }
+  ],
+  "queues": [
+    {
+      "name": "products",
+      "vhost": "/",
+      "durable": false,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic"
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "main_exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": false,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "main_exchange",
+      "vhost": "/",
+      "destination": "products",
+      "destination_type": "queue",
+      "routing_key": "products",
+      "arguments": {}
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+curl --location 'http://localhost:5000/products'
+
+curl --location 'http://localhost:5000/products' \
+--header 'Content-Type: application/json' \
+--data '{"name":"test", "description": "test", "price": 23}'
+
+curl --location --request PUT 'http://localhost:5000/products/d053ce5c-d262-4983-b1ae-7507b1e3ae32' \
+--header 'Content-Type: application/json' \
+--data '{"name":"test", "description": "testUpdated", "price": 23}'
+
+curl --location --request DELETE 'http://localhost:5000/products/d053ce5c-d262-4983-b1ae-7507b1e3ae32' \
+--header 'Content-Type: application/json' \
+--data '{"name":"test2", "description": "test4updated", "price": 23}'

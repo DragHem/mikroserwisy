@@ -1,0 +1,76 @@
+services:
+
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    volumes:
+      - ./init/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./init/definitions.json:/etc/rabbitmq/definitions.json
+
+  apigateway:
+    container_name: api-gateway
+    build:
+      context: ./apigateway
+      dockerfile: dockerfile
+    ports:
+      - 5000:5000
+    environment:
+      PRODUCT_MODIFY_SERVICE_URL: ${PRODUCT_MODIFY_SERVICE_URL}
+      PRODUCT_READ_SERVICE_URL: ${PRODUCT_READ_SERVICE_URL}
+
+  db-modify:
+    container_name: db-modify
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    ports:
+      - ${PORT_DB_MODIFY}:5432
+    environment:
+      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: product_update
+
+  db-read:
+    container_name: db-read
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    ports:
+      - ${PORT_DB_READ}:5432
+    environment:
+      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: product_read
+
+  products-read:
+    container_name: products-read
+    build:
+      context: ./products-read
+      dockerfile: dockerfile
+    restart: on-failure
+    # ports:
+    #   - 3001:3001
+    depends_on:
+      - db-read
+      - rabbitmq
+    environment:
+      - DATABASE_URL=postgresql://postgres:pass123@host.docker.internal:${PORT_DB_READ}/postgres
+
+  products-modify:
+    container_name: products-modify
+    build:
+      context: ./products-modify
+      dockerfile: dockerfile
+    restart: on-failure
+    # ports:
+    #   - 3000:3000
+    depends_on:
+      - db-modify
+      - rabbitmq
+    environment:
+      - DATABASE_URL=postgresql://postgres:pass123@host.docker.internal:${PORT_DB_MODIFY}/postgres
