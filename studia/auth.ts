@@ -1,17 +1,17 @@
-import NextAuth from 'next-auth';
-import Google from 'next-auth/providers/google';
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
 
-import type { NextAuthConfig } from 'next-auth';
+import type { NextAuthConfig } from "next-auth";
 
 export const config = {
   theme: {
-    logo: 'https://next-auth.js.org/img/logo/logo-sm.png',
+    logo: "https://next-auth.js.org/img/logo/logo-sm.png",
   },
   providers: [Google],
-  basePath: '/auth',
+  basePath: "/auth",
   callbacks: {
     jwt({ token, trigger, session }) {
-      if (trigger === 'update') token.name = session.user.name;
+      if (trigger === "update") token.name = session.user.name;
 
       return token;
     },

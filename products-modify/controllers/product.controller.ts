@@ -11,12 +11,13 @@ import {
 import { prisma as prismaClient } from "..";
 import { Prisma } from "@prisma/client";
 import { ReasonPhrases } from "http-status-codes";
-import * as amqp from 'amqplib';
+import * as amqp from "amqplib";
 
 @JsonController("/products")
 export class ProductController {
   @Post("/")
   async post(@Body() product: Prisma.ProductCreateInput) {
+    console.log("🚀 ~ ProductController ~ post ~ product:", product);
     const createdProduct = await prismaClient.product.create({ data: product });
 
     await addToQueue("POST", createdProduct);
@@ -61,22 +62,24 @@ export class ProductController {
 }
 
 const addToQueue = async (method: string, newProduct: object) => {
-  const rabbitMqConnection = await amqp.connect('amqp://rabbitmq');
+  const rabbitMqConnection = await amqp.connect("amqp://rabbitmq");
   const channel = await rabbitMqConnection.createChannel();
 
-  const exchangeName = 'main_exchange';
-  const routingKey = 'products';
+  const exchangeName = "main_exchange";
+  const routingKey = "products";
 
-  await channel.assertExchange(exchangeName, 'direct', { durable: false });
-  
+  await channel.assertExchange(exchangeName, "direct", { durable: false });
+
   const message = JSON.stringify({
     method: method,
-    data: newProduct
-  })
+    data: newProduct,
+  });
   channel.publish(exchangeName, routingKey, Buffer.from(message));
 
-  console.log(`Message sent to exchange ${exchangeName} with routing key ${routingKey}: ${message}`);
+  console.log(
+    `Message sent to exchange ${exchangeName} with routing key ${routingKey}: ${message}`
+  );
 
   await channel.close();
   await rabbitMqConnection.close();
-}
+};
