@@ -1,6 +1,4 @@
 services:
-
-
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -20,7 +18,7 @@ services:
       context: ./apigateway
       dockerfile: dockerfile
     ports:
-      - 5000:5000
+      - 5001:5001
     environment:
       PRODUCT_MODIFY_SERVICE_URL: ${PRODUCT_MODIFY_SERVICE_URL}
       PRODUCT_READ_SERVICE_URL: ${PRODUCT_READ_SERVICE_URL}

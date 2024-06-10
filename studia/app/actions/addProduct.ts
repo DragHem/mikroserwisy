@@ -12,7 +12,7 @@ export async function AddProduct(formData: FormData) {
   if (!product.name || !product.description || !product.name || !product.price)
     return;
 
-  await fetch("http://localhost:5000/products", {
+  await fetch("http://localhost:5001/products", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

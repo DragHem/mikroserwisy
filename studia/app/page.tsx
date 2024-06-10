@@ -3,24 +3,28 @@ import { sendLoggedInMessage } from "./messageBroker/messageBroker";
 import { GetProducts } from "./actions/getProduct";
 import { AddProduct } from "./actions/addProduct";
 import ProductList from "@/components/ProductList";
+import { Product } from "@/types";
+import { useState } from "react";
 
 export default async function Page() {
   const session = await auth();
+  const products = await GetProducts();
 
   if (!session?.user)
     return (
-      <form
-        action={async () => {
-          "use server";
-          await signIn("google");
-        }}
-      >
-        <button>Sign In</button>
-      </form>
+      <>
+        <form
+          action={async () => {
+            "use server";
+            await signIn("google");
+          }}
+        >
+          <button>Sign In</button>
+        </form>
+        <ProductList products={products} session={session} />
+      </>
     );
   sendLoggedInMessage(session?.user?.name);
-
-  const products = await GetProducts();
 
   return (
     <div className="space-y-2">
@@ -36,7 +40,7 @@ export default async function Page() {
         <button>Sign Out</button>
       </form>
 
-      <ProductList products={products} />
+      <ProductList products={products} session={session} />
 
       <form action={AddProduct}>
         <label>
